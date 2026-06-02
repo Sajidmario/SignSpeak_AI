@@ -9,7 +9,7 @@ import time
 
 # 1. Config
 BASE_DIR = r'C:\Users\LENOVO\OneDrive\Documents\Projects\MyNotebooks\Sign Language'
-FINETUNED_PATH = os.path.join(BASE_DIR, 'isl_finetuned_v5.pth')
+FINETUNED_PATH = os.path.join(BASE_DIR, 'isl_finetuned_v6.pth')
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 SEQUENCE_LENGTH = 30
 NUM_FEATURES = 225

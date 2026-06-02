@@ -41,6 +41,9 @@ with open("label_map.json", "r") as f:
 feat_mean = np.load("feat_mean.npy")
 feat_std = np.load("feat_std.npy")
 
+print("Mean shape:", feat_mean.shape)
+print("Std shape:", feat_std.shape)
+
 NUM_CLASSES = len(label_map)
 
 model = SignLanguageModel(
@@ -53,9 +56,14 @@ model = SignLanguageModel(
 ).to(DEVICE)
 
 checkpoint = torch.load(
-    "isl_finetuned_v5.pth",
+    "isl_finetuned_v6.pth",
     map_location=DEVICE
 )
+
+print("Checkpoint classes:", checkpoint.get("num_classes", "Unknown"))
+print("Label map classes:", NUM_CLASSES)
+print("Stage:", checkpoint.get("stage", "Unknown"))
+print("Val Acc:", checkpoint.get("val_acc", "Unknown"))
 
 model.load_state_dict(
     checkpoint["model_state_dict"]
@@ -113,7 +121,6 @@ def predict(request: PredictRequest):
 
         for frame_data in request.frames:
 
-            # Remove data:image/jpeg;base64,
             if "," in frame_data:
                 frame_data = frame_data.split(",")[1]
 
@@ -131,9 +138,23 @@ def predict(request: PredictRequest):
 
             sequence.append(keypoints)
 
+    # ADD THE NEW CODE HERE
     sequence = np.array(sequence, dtype=np.float32)
 
+    print("Sequence shape:", sequence.shape)
+
+    if sequence.shape != (30, 225):
+        return {
+            "error": f"Expected sequence shape (30,225), got {sequence.shape}"
+        }
+
     sequence = (sequence - feat_mean) / feat_std
+
+    print(
+        "Normalized stats:",
+        float(sequence.mean()),
+        float(sequence.std())
+    )
 
     input_tensor = (
         torch.tensor(sequence)
@@ -142,7 +163,6 @@ def predict(request: PredictRequest):
     )
 
     with torch.no_grad():
-
         probs = torch.softmax(
             model(input_tensor),
             dim=1
