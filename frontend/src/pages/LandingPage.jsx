@@ -115,8 +115,8 @@ const LandingPage = () => {
               <p className="bio">Architecting the scalable frontend and backend integration ready structures.</p>
             </div>
             <div className="team-member card">
-              <div className="member-avatar">FN</div>
-              <h3>[Friend Name]</h3>
+              <div className="member-avatar">SA</div>
+              <h3>Sajid Ahmed</h3>
               <p className="role text-gradient">AI/ML Engineer</p>
               <p className="bio">Developing and training the core computer vision model for gesture recognition.</p>
             </div>
